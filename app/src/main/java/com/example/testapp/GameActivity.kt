@@ -1,28 +1,30 @@
 package com.example.testapp
 
+import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.graphics.Insets
+import android.os.*
+import android.util.DisplayMetrics
 import android.view.View
+import android.view.WindowInsets
 import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TableRow
-import androidx.core.view.children
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.example.testapp.databinding.ActivityGameBinding
-import kotlin.properties.Delegates
 import kotlin.random.Random
+
 
 class GameActivity : AppCompatActivity() {
     lateinit var binding: ActivityGameBinding
     lateinit var handler: Handler
+
     var res = 0
     val strMole = "X"
     var strBtn = ""
+
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
@@ -77,23 +79,24 @@ class GameActivity : AppCompatActivity() {
         preTimer.start()
 
 
-
-
+        val width = getScreenWidth(this)
         val table = binding.tableLayout
         for (i in 0..2){
             val tableRow = TableRow(this)
-            val buttonsrow = mutableListOf<Button>()
+
             for (j in 0..2){
                 val button = Button(this)
                 button.setOnClickListener(Listener(i, j))
-                //buttonsrow.add(button)
-                button.width = 300
-                button.height = 300
+
+                button.width = (width/3.5).toInt()
+                button.height = (width/3.5).toInt()
+                button.textSize = 24F
                 tableRow.addView(button, TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     TableRow.LayoutParams.WRAP_CONTENT))
             }
             table.addView(tableRow, TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,
                 TableLayout.LayoutParams.WRAP_CONTENT))
+
         }
 
 
@@ -106,6 +109,18 @@ class GameActivity : AppCompatActivity() {
 //        startActivity(intent)
     }
 
+    fun getScreenWidth(activity: Activity): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = activity.windowManager.currentWindowMetrics
+            val insets: Insets = windowMetrics.windowInsets
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            windowMetrics.bounds.width() - insets.left - insets.right
+        } else {
+            val displayMetrics = DisplayMetrics()
+            activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
+            displayMetrics.widthPixels
+        }
+    }
     var ind = 0
     private val repeat = object : Runnable{override fun run(){
         val table = binding.tableLayout
