@@ -17,8 +17,10 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         val rules = "Try to tap the most moles in 30 seconds"
         binding.tvInfo.text = rules
+
         val path = binding.root.context.filesDir
         val letDirectory = File(path, "LET")
         letDirectory.mkdirs()
@@ -27,8 +29,6 @@ class MainActivity : AppCompatActivity() {
         if(isNewFile){
             file.writeText("0")
         }
-
-
         binding.tvNumScore.text = file.readLines()[0]
 
 
